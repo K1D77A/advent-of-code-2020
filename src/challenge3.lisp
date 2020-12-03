@@ -38,8 +38,8 @@ position 0 is returned."
 
 (defun check-all-slopes (list-of-slopes)
   (mapcar (lambda (slope-list)
-            (let ((x (first slope-list))
-                  (y (second slope-list)))
+            (destructuring-bind (x y)
+                slope-list
               (down-the-slope *input3* 0 x y)))
           list-of-slopes))
 
