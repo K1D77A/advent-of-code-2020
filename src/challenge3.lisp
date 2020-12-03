@@ -28,7 +28,6 @@ position 0 is returned."
          (current-pos 0))
     (loop :for going-down :from (+ 0 down) :upto (1- (length slope)) :by down
           :for string := (elt slope going-down)
-          :do (print going-down)
           :do (setf current-pos (wrap-around-string string current-pos along))
               (when (treep (aref string current-pos))
                 (incf trees-hit)))
