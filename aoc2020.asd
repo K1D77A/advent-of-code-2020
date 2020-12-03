@@ -10,4 +10,5 @@
   :components ((:file "package")
                (:file "helpers")
                (:file "challenge1")
-               (:file "challenge2")))
+               (:file "challenge2")
+               (:file "challenge3")))
