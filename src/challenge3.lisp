@@ -26,7 +26,7 @@ position 0 is returned."
 (defun down-the-slope (slope start along down)
   (let* ((trees-hit (if (tree-at (elt slope 0) start) 1 0))
          (current-pos 0))
-    (loop :for going-down :from (+ 0 down) :upto (1- (length slope)) :by down
+    (loop :for going-down :from down :upto (1- (length slope)) :by down
           :for string := (elt slope going-down)
           :do (setf current-pos (wrap-around-string string current-pos along))
               (when (treep (aref string current-pos))
