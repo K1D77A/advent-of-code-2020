@@ -10,13 +10,6 @@
 (defun to-string (list)
   (coerce list 'string))
 
-(defun string-split (string character)
-  "split STRING at CHARACTER"
-  (loop :for (char . rest) :on (coerce string 'list)
-        :when (char= char character)
-          :do (return (values (to-string res) (to-string rest)))
-        :collect char :into res))
-
 (defun create-validator (a b check pass)
   (list a b check pass))
 
