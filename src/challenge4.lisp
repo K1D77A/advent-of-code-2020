@@ -1,4 +1,3 @@
-(defpackage #:aoc2020-4)
 (in-package #:aoc2020-4)
 
 (defparameter *input4*

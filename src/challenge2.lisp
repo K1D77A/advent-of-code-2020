@@ -1,5 +1,4 @@
-(defpackage #:aoc-2020-2)
-(in-package #:aoc2020-2)
+(in-package #:aoc2020)
 
 (defparameter *input2* (read-file #P"src/input2"
                                   :line-processor #'string))
