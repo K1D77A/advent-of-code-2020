@@ -70,9 +70,8 @@ vals"
 (defun all-validate-p (ele list-of-validators)
   "Calls all of the validators listed in LIST-OF-VALIDATORS with ele. Returns t if
 all validate, nil otherwise"
-  (notany #'null (mapcar (lambda (validator)
-                           (call-validator validator ele))
-                         list-of-validators)))
+  (loop :for validator :in list-of-validators
+        :always (call-validator validator ele)))
 
 (defun valid-passport-p (passport-alist &optional (validate nil))
   "Takes in a passport-alist and checks if it is valid by comparing its key names
@@ -127,13 +126,6 @@ to the key names in *fields*, only checks if the the key is designated as requir
                             (<= 59 num 76))
                            (t nil))))))
 
-(defun any-of (ele list-of-potential &key (test #'equal))
-  "checks if ele is any of list-of-potential."
-  (find t
-        (map 'list (lambda (item)
-                     (funcall test item ele))
-             list-of-potential)))
-
 (defun string-to-charcodes (string)
   (map 'list #'char-code string))
 
@@ -142,23 +134,22 @@ to the key names in *fields*, only checks if the the key is designated as requir
 (defun valid-hex-p (string)
   (when (= (length string) 7)
     (let ((str (subseq string 1)))
-      (find t (loop :for ele :across (string-downcase str)
-                    :collect (any-of (char-code ele) *hex-charcodes*))))))
+      (loop :for ele :across (string-downcase str)
+              :thereis (subsetp (list (char-code ele)) *hex-charcodes*)))))
 
 (new-validator 'hclvalid
                (lambda (entry)
                  (valid-hex-p entry)))
 
 (new-validator 'eclvalid (lambda (entry)
-                           (any-of entry
-                                   '("amb" "blu" "brn" "gry" "grn" "hzl" "oth")
-                                   :test #'string=)))
+                           (subsetp (list entry)
+                                    '("amb" "blu" "brn" "gry" "grn" "hzl" "oth")
+                                    :test #'string=)))
 
 (new-validator 'pidvalid (lambda (entry)
                            (when (= (length entry) 9)
                              (handler-case (parse-integer entry)
                                (condition () nil)))))
-
 
 (defun aoc4-b (input)
   (count t (mapcar (lambda (list)
