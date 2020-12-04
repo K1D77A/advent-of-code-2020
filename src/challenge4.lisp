@@ -6,7 +6,7 @@
 
 (defvar *pt2validators* (make-hash-table))
 
-(defparameter *fields*
+(defparameter *fields*;;can accept an arbitrary number of validators.
   '((:BYR T byrvalid)
     (:IYR T iyrvalid)
     (:EYR T eyrvalid)
@@ -67,15 +67,22 @@ vals"
           (setf key-vals (append key-vals (get-key-vals string)))
           (push (key-val string) key-vals)))))
 
+(defun all-validate-p (ele list-of-validators)
+  "Calls all of the validators listed in LIST-OF-VALIDATORS with ele. Returns t if
+all validate, nil otherwise"
+  (notany #'null (mapcar (lambda (validator)
+                           (call-validator validator ele))
+                         list-of-validators)))
+
 (defun valid-passport-p (passport-alist &optional (validate nil))
   "Takes in a passport-alist and checks if it is valid by comparing its key names
 to the key names in *fields*, only checks if the the key is designated as required"
-  (loop :for (key requiredp validator) :in *fields*
+  (loop :for (key requiredp . validators) :in *fields*        
         :if requiredp
           :do (let ((key-val (assoc key passport-alist)))
                 (if key-val
                     (when validate
-                      (unless (call-validator validator (second key-val))
+                      (unless (all-validate-p (second key-val) validators)
                         (return nil)))
                     (return nil)))
         :finally (return t)))
