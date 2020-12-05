@@ -1,4 +1,4 @@
-(in-package #:aoc2020-4)
+(in-package #:aoc2020)
 
 (defparameter *input4*
   (read-file "src/input4" :line-processor #'string))
@@ -63,7 +63,7 @@ vals"
   (let ((key-vals nil))
     (dolist (string passport-list key-vals)
       (if (multiple-fields-p string)
-          (setf key-vals (append key-vals (get-key-vals string)))
+          (setf key-vals (nconc key-vals (get-key-vals string)))
           (push (key-val string) key-vals)))))
 
 (defun all-validate-p (ele list-of-validators)
@@ -150,11 +150,12 @@ to the key names in *fields*, only checks if the the key is designated as requir
                              (handler-case (parse-integer entry)
                                (condition () nil)))))
 
-(defun aoc4-b (input)
+(defparameter *collected*  (mapcar #'passport-list-to-key-vals
+                                   (collect-passports *input4*)))
+(defun aoc4-b ()
   (count t (mapcar (lambda (list)
                      (valid-passport-p list t))
-                   (mapcar #'passport-list-to-key-vals
-                           (collect-passports input)))))
+                   *collected*)))
 
 
 

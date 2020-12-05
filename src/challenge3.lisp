@@ -16,6 +16,8 @@ position 0 is returned."
           dif)
         new-pos)))
 
+(declaim (inline tree-at treep))
+
 (defun treep (char)
   (char= char #\#))
 
