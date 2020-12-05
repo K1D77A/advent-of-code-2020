@@ -62,8 +62,8 @@ upper"
          (all-ids (mapcar #'seat-id process-all)))
     all-ids))
 
-(defun missing-number ()
+(defun aoc5-b ()
   (let ((ids (sort (all-ids) #'<)))
-    (loop :for (a b) :on ids
-            :thereis (when (= (- b a) 2)
-                       (1+ a)))))
+    (loop :for (x y) :on ids
+            :thereis (when (= (- y x) 2)
+                       (1+ x)))))
