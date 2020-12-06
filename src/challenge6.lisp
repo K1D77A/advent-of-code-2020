@@ -19,10 +19,7 @@ of all the characters that are found to be in common."
   (let ((chars (make-hash-table :test #'equal))
         (res ()))
     (loop :for string :in list-of-strings
-          :do (loop :for char :across string
-                    :do (if (numberp (gethash char chars))
-                            (incf (gethash char chars))
-                            (setf (gethash char chars) 1))))
+          :do (map nil (lambda (char) (incf (gethash char chars 0))) string))
     (maphash (lambda (key val)               
                (when (>= val (length list-of-strings))
                  (push key res)))
