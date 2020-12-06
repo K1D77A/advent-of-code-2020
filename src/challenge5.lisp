@@ -1,4 +1,4 @@
-(in-package #:aoc-2020)
+(in-package #:aoc2020)
 
 (defparameter *input5* (read-file "src/input5" :line-processor #'string))
 ;;can change :line-processor to #'execute-from-string and it'll calculate all of the
