@@ -14,4 +14,5 @@
                (:file "challenge3")
                (:file "challenge4")
                (:file "challenge5")
-               (:file "challenge6")))
+               (:file "challenge6")
+               (:file "challenge7")))
