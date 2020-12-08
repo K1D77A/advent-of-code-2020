@@ -2,10 +2,8 @@
 
 (defparameter *input7*
   (mapcar #'parsed-string-to-useable-rule
-          (mapcar #'clean-up-list 
-                  (mapcar #'parse-rulestring-to-list 
-                          (read-file "src/input7"
-                                     :line-processor #'string)))))
+          (read-file "src/input7"
+                     :line-processor #'parse-rulestring-to-list)))
 
 (defparameter *rules* (make-hash-table))
 
@@ -35,7 +33,7 @@
 (defun parse-with-ruleset (string ruleset)
   (let ((result ())
         (string string))
-    (dolist (rule ruleset (append (nreverse result) (list (list string))))
+    (dolist (rule ruleset (nconc (nreverse result) (list (list string))))
       (multiple-value-bind (res rest)
           (parse-string string rule)
         (setf string rest)
@@ -48,9 +46,8 @@
                                            :collect 'comma-contain)))))
 
 (defun parse-rulestring-to-list (string)
-  (let* ((ruleset (compose-ruleset-from-rule-string string))
-         (list (parse-with-ruleset string ruleset)))
-    list))
+  (let ((ruleset (compose-ruleset-from-rule-string string)))
+    (clean-up-list (parse-with-ruleset string ruleset))))
 
 (defun clean-up-list (list)
   (loop :for i :in list
@@ -66,10 +63,9 @@
     (labels ((rec (string)
                (multiple-value-bind (r re)
                    (string-split string #\Space)
-                 (if (null r)
-                     nil
-                     (progn (push r res)
-                            (rec re))))))
+                 (unless (null r)
+                   (push r res)
+                   (rec re)))))
       (rec (first list))
       (nreverse res))))
 
@@ -82,12 +78,11 @@
 (defun parsed-string-to-useable-rule (list)
   (let ((bag (fix-bag (first list)))
         (contains (mapcar #'fix-contain (rest (rest list)))))
-    (append (list (list bag))
-            (mapcar #'to-rule  (append (list (first (rest list))) contains)))))
+    (nconc (list (list bag))
+           (mapcar #'to-rule  (nconc (list (first (rest list))) contains)))))
 
 (defun bag-contains (string)
-  (let ((list (find string *input7* :key (lambda (ele )
-                                           (first (first ele)))
+  (let ((list (find string *input7* :key (lambda (ele ) (first (first ele)))
                                     :test #'string=)))
     (remove-if #'null (mapcar #'second list))))
 
@@ -101,30 +96,27 @@
   (some #'shiny-gold-p list))
 
 (defun bag-contains-contains (string)
-  (reduce #'append (mapcar #'bag-contains (bag-contains string))))
+  (reduce #'nconc (mapcar #'bag-contains (bag-contains string))))
 
 (defun compute-bag-contains (bag)
   (let ((start (bag-contents-from-bag bag))
-        (searched-for ())
-        (gold 0))
+        (searched-for ()))
     (labels ((rec (list)
                (let ((contains
-                       (reduce #'append
+                       (reduce #'nconc
                                (mapcar
                                 (lambda (string)
-                                  (if (find string searched-for
-                                            :test #'string=)
-                                      nil
-                                      (progn (push string searched-for)
-                                             (when (string= string "shiny gold")
-                                               (setf gold 1))
-                                             (bag-contains string))))
+                                  (unless (find string searched-for
+                                                :test #'string=)
+                                    (push string searched-for)
+                                    (when (shiny-gold-p string)
+                                      (return-from compute-bag-contains 1))
+                                    (bag-contains string)))
                                 list))))
-                 (if contains
-                     (rec contains)
-                     nil))))
+                 (when contains
+                   (rec contains)))))
       (rec start)
-      gold)))
+      0)))
 
 (defun aoc-7a ()
   (reduce #'+ (mapcar #'compute-bag-contains *input7*)))
@@ -149,3 +141,6 @@
                     (+ (rec (car list) acc)
                        (rec (cdr list) acc))))))
     (1-(rec (bag-contains-count string) 1))))
+
+(defun aoc-7b ()
+  (total-number-of-bags-within "shiny gold"))
