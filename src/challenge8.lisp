@@ -1,10 +1,8 @@
 (in-package #:aoc2020)
 
-
 (defun string->instruction (string)
   (multiple-value-bind (cmd args)
       (string-split string #\Space)
-    (values cmd args)
     (let ((sign (intern (string (aref args 0))))
           (cmd-sym (intern (string-upcase cmd)))
           (args (parse-integer (subseq args 1))))
@@ -56,7 +54,6 @@
       (setf (aref arr pos) (list key sym n 'EXECUTED))
       (funcall (gethash key *instructions*) args environment))))
 
-
 (new-instruction 'JMP
                  (lambda (args environment)
                    (destructuring-bind (updown n executed)
@@ -94,7 +91,7 @@
     (if (>= current-pos (length instructions))
         (error 'successful-execution)
         (let ((instruction (aref instructions current-pos)))
-          (if (equal 'EXECUTED (first (last instruction)))
+          (if (equal 'EXECUTED (first (last instruction)));;pt1
               (error 'borked-execution)
               (use-instruction (first instruction)
                                (rest instruction) environment))))))
@@ -148,12 +145,13 @@
                  (string-equal second "Borked")))
              (reduce (lambda (l y)
                        (concatenate 'list l y)) 
-                     (map 'list (lambda (ele) (map 'list (lambda (ele)
-                                                      (multiple-value-bind (str env)
-                                                          (execute ele)
-                                                        (list str env)))
-                                              ele))
+                     (map 'list (lambda (ele)
+                                  (map 'list (lambda (ele)
+                                               (multiple-value-bind (str env)
+                                                   (execute ele)
+                                                 (list str env)))
+                                       ele))
                           sequences))))
 
-
-
+(defun aoc-8b ()
+  (accumulator (first (first (test-new-sequences (all-new-sequences (rf)))))))
