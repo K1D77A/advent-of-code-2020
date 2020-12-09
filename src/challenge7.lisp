@@ -1,10 +1,5 @@
 (in-package :aoc2020)
 
-(defparameter *input7*
-  (mapcar #'parsed-string-to-useable-rule
-          (read-file "src/input7"
-                     :line-processor #'parse-rulestring-to-list)))
-
 (defparameter *rules* (make-hash-table))
 
 (defun new-rule (key list)
@@ -45,9 +40,11 @@
     (compose-ruleset (append default (loop :repeat (1- commas)
                                            :collect 'comma-contain)))))
 
+
 (defun parse-rulestring-to-list (string)
   (let ((ruleset (compose-ruleset-from-rule-string string)))
     (clean-up-list (parse-with-ruleset string ruleset))))
+
 
 (defun clean-up-list (list)
   (loop :for i :in list
@@ -80,6 +77,12 @@
         (contains (mapcar #'fix-contain (rest (rest list)))))
     (nconc (list (list bag))
            (mapcar #'to-rule  (nconc (list (first (rest list))) contains)))))
+
+
+(defparameter *input7*
+  (mapcar #'parsed-string-to-useable-rule
+          (read-file "src/input7"
+                     :line-processor #'parse-rulestring-to-list)))
 
 (defun bag-contains (string)
   (let ((list (find string *input7* :key (lambda (ele ) (first (first ele)))
